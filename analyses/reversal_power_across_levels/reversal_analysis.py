@@ -40,6 +40,7 @@ Author: ChatGPT
 """
 
 import re
+from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 from datetime import time, timedelta, datetime
 
@@ -48,9 +49,11 @@ import pandas as pd
 import pytz
 
 # =================== CONFIG ===================
-CSV_FILE = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"     # <-- set to your 1-minute OHLCV CSV
-OUT_EVENTS = "reversal_events.csv"
-OUT_SUMMARY = "reversal_summary.csv"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+OUT_EVENTS = str(OUT_DIR / "reversal_events.csv")
+OUT_SUMMARY = str(OUT_DIR / "reversal_summary.csv")
 
 WEEKDAYS_ONLY = True
 CHUNKSIZE = 1_000_000
@@ -712,8 +715,8 @@ def main():
     for prox in CONF_THRESH_POINTS:
         combo_df = summarize_combos(df_ev, prox)
         if not combo_df.empty:
-            fname = f"reversal_combo_{prox}pt.csv"
-            combo_df.to_csv(fname, index=False)
+            fname = OUT_DIR / f"reversal_combo_{prox}pt.csv"
+            combo_df.to_csv(str(fname), index=False)
             print(f"\n✅ Wrote combo summary @ ±{prox} pts → {fname} (rows={len(combo_df)})")
             print(combo_df.head(10).to_string(index=False))
 

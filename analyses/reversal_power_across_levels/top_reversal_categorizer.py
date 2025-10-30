@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 # --- Load all reversal events ---
 print("Loading reversal events...")
-df = pd.read_csv("reversal_events.csv", parse_dates=["touch_ts", "created_ts", "et_date"])
+OUT_DIR = Path(__file__).resolve().parent
+df = pd.read_csv(str(OUT_DIR / "reversal_events.csv"), parse_dates=["touch_ts", "created_ts", "et_date"])
 
 print(f"Total reversal events: {len(df):,}")
 
@@ -122,8 +124,8 @@ print("\nSaving detailed results...")
 
 for reversal_id, events in categorized_events.items():
     if len(events) > 0:
-        filename = f"top_reversal_{reversal_id}_{reversal_info['description'].replace(' ', '_').replace('/', '_')}.csv"
-        events.to_csv(filename, index=False)
+        filename = OUT_DIR / f"top_reversal_{reversal_id}_{reversal_info['description'].replace(' ', '_').replace('/', '_')}.csv"
+        events.to_csv(str(filename), index=False)
         print(f"Saved {len(events):,} events to {filename}")
 
 # --- Create master summary ---
@@ -147,13 +149,13 @@ for reversal_id, stats in summary_stats.items():
     })
 
 summary_df = pd.DataFrame(summary_data)
-summary_df.to_csv("top_reversal_summary.csv", index=False)
+summary_df.to_csv(str(OUT_DIR / "top_reversal_summary.csv"), index=False)
 
 # --- Create combined detailed file ---
 print("Creating combined detailed file...")
 all_top_events = pd.concat(categorized_events.values(), ignore_index=True)
 all_top_events = all_top_events.sort_values(['reversal_rank', 'et_date', 'touch_ts'])
-all_top_events.to_csv("all_top_reversal_events.csv", index=False)
+all_top_events.to_csv(str(OUT_DIR / "all_top_reversal_events.csv"), index=False)
 
 print(f"\n✅ Analysis complete!")
 print(f"Total top reversal events found: {len(all_top_events):,}")

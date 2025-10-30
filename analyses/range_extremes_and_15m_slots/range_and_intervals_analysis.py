@@ -13,6 +13,7 @@ Outputs:
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import Dict, List, Tuple
 import pandas as pd
 import numpy as np
@@ -21,8 +22,10 @@ import pytz
 
 
 # =================== CONFIG ===================
-CSV_FILE = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"
-EVENTS_FILE = "us_high_impact_events_2020_to_2025.csv"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+EVENTS_FILE = str(DATA_DIR / "us_high_impact_events_2020_to_2025.csv")
 
 # Threshold for an "extreme" RTH day range (points)
 EXTREME_RTH_RANGE = 200.0
@@ -405,23 +408,23 @@ def main() -> None:
         return
 
     # Save raw outputs
-    daily.to_csv("daily_session_metrics.csv", index=False)
-    intervals.to_csv("ny_15m_interval_by_day.csv", index=False)
-    print("✅ Wrote daily_session_metrics.csv and ny_15m_interval_by_day.csv")
+    daily.to_csv(str(OUT_DIR / "daily_session_metrics.csv"), index=False)
+    intervals.to_csv(str(OUT_DIR / "ny_15m_interval_by_day.csv"), index=False)
+    print("✅ Wrote analyses/range_extremes_and_15m_slots/daily_session_metrics.csv and ny_15m_interval_by_day.csv")
 
     # Extreme correlations
     corr = summarize_extreme_correlations(daily)
     if not corr.empty:
-        corr.to_csv("extreme_range_correlations.csv", index=False)
-        print("✅ Wrote extreme_range_correlations.csv")
+        corr.to_csv(str(OUT_DIR / "extreme_range_correlations.csv"), index=False)
+        print("✅ Wrote analyses/range_extremes_and_15m_slots/extreme_range_correlations.csv")
         print("Top drivers by extreme_rate (first 12 rows):")
         print(corr.sort_values(["extreme_rate", "count"], ascending=[False, False]).head(12).to_string(index=False))
 
     # 15-minute summary across full RTH session
     slot_summary = summarize_15m(intervals)
     if not slot_summary.empty:
-        slot_summary.to_csv("ny_15m_interval_summary.csv", index=False)
-        print("✅ Wrote ny_15m_interval_summary.csv")
+        slot_summary.to_csv(str(OUT_DIR / "ny_15m_interval_summary.csv"), index=False)
+        print("✅ Wrote analyses/range_extremes_and_15m_slots/ny_15m_interval_summary.csv")
         print("\nTop 10 15m slots by mean range:")
         print(slot_summary[["slot", "mean", "median", "p95", "share_max_of_day_%"]].head(10).to_string(index=False))
 
@@ -429,8 +432,8 @@ def main() -> None:
     # Q1: List extreme days and their overnight ranges
     extreme_days = daily.loc[daily["extreme_rth"] == 1, ["date", "rth_range", "overnight_range", "overnight_direction", "pre_open_gap", "asia_range", "london_range"]]
     if not extreme_days.empty:
-        extreme_days.sort_values("rth_range", ascending=False).head(15).to_csv("top_extreme_days.csv", index=False)
-        print("\n✅ Wrote top_extreme_days.csv (top 15 by RTH range)")
+        extreme_days.sort_values("rth_range", ascending=False).head(15).to_csv(str(OUT_DIR / "top_extreme_days.csv"), index=False)
+        print("\n✅ Wrote analyses/range_extremes_and_15m_slots/top_extreme_days.csv (top 15 by RTH range)")
 
 
 if __name__ == "__main__":

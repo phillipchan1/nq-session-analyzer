@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 # ==== 1. Load Raw Data ====
-df = pd.read_csv(
-    "glbx-mdp3-20200927-20250926.ohlcv-1m.csv",
-)
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+
+df = pd.read_csv(str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"))
 
 # ==== 2. Data Cleaning ====
 # Remove anomalous prices
@@ -17,7 +19,7 @@ df["ts_event"] = pd.to_datetime(df["ts_event"], utc=True).dt.tz_convert("America
 df["date"] = df["ts_event"].dt.date
 
 # ==== 3. Load and Merge US High Impact Events ====
-events_df = pd.read_csv("us_high_impact_events_2020_to_2025.csv")
+events_df = pd.read_csv(str(DATA_DIR / "us_high_impact_events_2020_to_2025.csv"))
 events_df["date"] = pd.to_datetime(events_df["date"], format='%Y-%m-%d', errors='coerce')
 events_df.dropna(subset=['date'], inplace=True)
 events_df["date"] = events_df["date"].dt.date
@@ -355,5 +357,5 @@ if 'overnight_range' in result.columns:
 
 
 # ==== 8. Save Output ====
-result.to_csv("nq_session_summary.csv", index=False)
-print("\n✅ Done! Detailed session analysis saved to nq_session_summary.csv")
+result.to_csv(str(OUT_DIR / "nq_session_summary.csv"), index=False)
+print("\n✅ Done! Detailed session analysis saved to analyses/ny_open_45m_range_vs_events/nq_session_summary.csv")

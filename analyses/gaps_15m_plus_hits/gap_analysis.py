@@ -16,6 +16,7 @@ Analyzes:
 """
 
 import re, sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from datetime import datetime, time, timedelta
@@ -23,9 +24,11 @@ import pytz
 from collections import defaultdict
 
 # -------------------- CONFIG --------------------
-CSV_FILE = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"
-OUT_FILE = "gap_analysis.csv"
-DETAILED_OUT_FILE = "gap_detailed.csv"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+OUT_FILE = str(OUT_DIR / "gap_analysis.csv")
+DETAILED_OUT_FILE = str(OUT_DIR / "gap_detailed.csv")
 
 ASIA_START = time(21, 0)  # 9 PM ET
 ASIA_END = time(3, 0)     # 3 AM ET

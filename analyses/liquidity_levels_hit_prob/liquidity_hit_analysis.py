@@ -14,6 +14,7 @@ Tracks:
 """
 
 import re, sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from datetime import datetime, time, timedelta
@@ -21,9 +22,11 @@ import pytz
 from collections import defaultdict
 
 # -------------------- CONFIG --------------------
-CSV_FILE = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"
-OUT_FILE = "liquidity_hit_analysis.csv"
-DETAILED_OUT_FILE = "liquidity_hit_detailed.csv"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+OUT_FILE = str(OUT_DIR / "liquidity_hit_analysis.csv")
+DETAILED_OUT_FILE = str(OUT_DIR / "liquidity_hit_detailed.csv")
 
 LONDON_START = time(3, 0)
 LONDON_END = time(8, 0)

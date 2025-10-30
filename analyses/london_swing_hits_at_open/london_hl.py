@@ -9,14 +9,17 @@ It will output summary_nyopen_london_swing_hits.csv
 """
 
 import re, sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from datetime import datetime, time
 import pytz
 
 # -------------------- CONFIG --------------------
-CSV_FILE = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"
-OUT_FILE = "summary_nyopen_london_swing_hits.csv"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+OUT_FILE = str(OUT_DIR / "summary_nyopen_london_swing_hits.csv")
 
 LONDON_START = time(3, 0)
 LONDON_END   = time(8, 0)

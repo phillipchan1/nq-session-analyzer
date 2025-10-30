@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from pathlib import Path
 
 # ========================= PRESETS =========================
 # Choose one: "balanced" (recommended) or "exploratory"
@@ -44,7 +45,9 @@ PRESETS = {
 CFG = PRESETS[PRESET]
 
 # ========================= INPUT =========================
-DATA_PATH   = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"   # <-- set your path
+DATA_DIR    = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR     = Path(__file__).resolve().parent
+DATA_PATH   = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")   # <-- set your path
 USE_PARQUET = False                 # True if DATA_PATH is a parquet file
 
 # =========================================================
@@ -418,8 +421,8 @@ def main():
     print(trades["R_nominal"].describe())
 
     cols = ["date","ts_entry","ts_exit","side","entry","stop_init","tp1","tp2","exit","outcome","points","R","R_nominal","tp1_hit"]
-    trades[cols].to_csv("trades_ict_vp_v2_1.csv", index=False)
-    print("\nSaved trades_ict_vp_v2_1.csv")
+    trades[cols].to_csv(str(OUT_DIR / "trades_ict_vp_v2_1.csv"), index=False)
+    print("\nSaved analyses/ict_vp_v2_1_backtest/trades_ict_vp_v2_1.csv")
 
 
 if __name__ == "__main__":

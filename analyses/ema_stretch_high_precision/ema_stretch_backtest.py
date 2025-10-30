@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
 from datetime import timedelta
+from pathlib import Path
 
 # ======================
 # Config (edit here)
 # ======================
-INPUT_CSV = "glbx-mdp3-20240926-20250925.ohlcv-1m.csv.zst"  # your Databento 1m OHLCV export
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR = Path(__file__).resolve().parent
+INPUT_CSV = str(DATA_DIR / "glbx-mdp3-20240926-20250925.ohlcv-1m.csv.zst")  # your Databento 1m OHLCV export
 INPUT_COMPRESSION = "zstd"
 
 # RTH filter (NY time). Set to None to disable.
@@ -32,7 +35,7 @@ CANDIDATES = [
     ("dist_ema_9",  9, "short", 30.0, 30.0, 30, "d9_bin9_S_30/30_h30"),
 ]
 
-OUTPUT_TRADES_CSV = "trades_high_precision.csv"
+OUTPUT_TRADES_CSV = str(OUT_DIR / "trades_high_precision.csv")
 
 # ======================
 # Helpers

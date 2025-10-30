@@ -1,7 +1,9 @@
 import pandas as pd
+from pathlib import Path
 
 # --- Load your full reversal data ---
-df = pd.read_csv("reversal_events.csv", parse_dates=["touch_ts", "created_ts", "et_date"])
+OUT_DIR = Path(__file__).resolve().parent
+df = pd.read_csv(str(OUT_DIR / "reversal_events.csv"), parse_dates=["touch_ts", "created_ts", "et_date"])
 
 # --- Define your top 10 reversal types (singles or confluences) ---
 top_signals = [
@@ -42,8 +44,8 @@ day_summary = subset.groupby("et_date")["level_type"].count().reset_index()
 day_summary.columns = ["date", "top_event_count"]
 
 # --- Save both ---
-subset.to_csv("reversal_top_events_detailed.csv", index=False)
-day_summary.to_csv("reversal_top_events_by_day.csv", index=False)
+subset.to_csv(str(OUT_DIR / "reversal_top_events_detailed.csv"), index=False)
+day_summary.to_csv(str(OUT_DIR / "reversal_top_events_by_day.csv"), index=False)
 
 print(f"✅ Found {len(subset)} top reversal touches across {len(day_summary)} trading days.")
 print("Files saved: reversal_top_events_detailed.csv and reversal_top_events_by_day.csv")

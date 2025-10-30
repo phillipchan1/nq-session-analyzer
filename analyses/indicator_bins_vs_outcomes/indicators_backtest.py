@@ -1,9 +1,12 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from pathlib import Path
 
 # ========= USER SETTINGS =========
-DATA_PATH      = "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"  # Databento 1m OHLCV CSV
+DATA_DIR       = Path(__file__).resolve().parents[2] / "data"
+OUT_DIR        = Path(__file__).resolve().parent
+DATA_PATH      = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")  # Databento 1m OHLCV CSV
 SYMBOL_PREFIX  = "NQ"                  # filter outright NQ (no spreads)
 TZ             = "America/New_York"
 
@@ -253,19 +256,19 @@ def main():
     result["dir_edge"]     = result["long_win_rate"] - result["short_win_rate"]  # positive -> long skew, negative -> short skew
 
     # Save all stats
-    result.to_csv("indicator_bin_stats.csv", index=False)
+    result.to_csv(str(OUT_DIR / "indicator_bin_stats.csv"), index=False)
 
     # Pull top candidates (high precision + decent count)
     MIN_COUNT = 200  # tune: avoid spurious tiny bins
     tops = (result[result["count"]>=MIN_COUNT]
               .sort_values(["max_win_rate","count"], ascending=[False, False])
               .head(200))
-    tops.to_csv("indicator_bin_top_candidates.csv", index=False)
+    tops.to_csv(str(OUT_DIR / "indicator_bin_top_candidates.csv"), index=False)
 
     # Also summarize “20-pt default” slice if present
     if 20.0 in TP_POINTS and (20.0*np.array(SL_MULTIPLIERS)).size>0:
         slice20 = result[(result["tp_pts"]==20.0)]
-        slice20.to_csv("indicator_bin_stats_20pt_only.csv", index=False)
+        slice20.to_csv(str(OUT_DIR / "indicator_bin_stats_20pt_only.csv"), index=False)
 
     print("\n✅ Done. Files written:")
     print("- indicator_bin_stats.csv (ALL features × bins × TP/SL × horizon)")

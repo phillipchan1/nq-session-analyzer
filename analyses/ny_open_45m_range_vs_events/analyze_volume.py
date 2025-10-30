@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 from scipy.stats import ttest_ind
 
 def perform_and_print_analysis(group_name, group_df, control_df, metric='total_volume'):
@@ -110,4 +111,5 @@ def analyze_session_data(file_path):
 
 
 if __name__ == "__main__":
-    analyze_session_data('nq_session_summary.csv')
+    out_dir = Path(__file__).resolve().parent
+    analyze_session_data(str(out_dir / 'nq_session_summary.csv'))
