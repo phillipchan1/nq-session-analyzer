@@ -12,3 +12,5 @@ python ict_vp_backtest.py
 ## Outputs
 - trades_ict_vp_v2_1.csv
 
+
+

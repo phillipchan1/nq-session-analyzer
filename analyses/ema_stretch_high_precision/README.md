@@ -12,3 +12,5 @@ python ema_stretch_backtest.py
 ## Outputs
 - trades_high_precision.csv
 
+
+
