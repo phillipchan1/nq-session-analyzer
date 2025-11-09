@@ -18,3 +18,6 @@ python ema_stretch_backtest.py
 
 
 
+
+
+
