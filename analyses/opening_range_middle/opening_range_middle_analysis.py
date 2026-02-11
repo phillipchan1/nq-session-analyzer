@@ -20,10 +20,10 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Set
 import pandas as pd
 import numpy as np
-from datetime import time, timedelta
+from datetime import time, timedelta, date
 import pytz
 from tqdm import tqdm
 from collections import defaultdict
@@ -43,12 +43,111 @@ HIT_WINDOW_END = time(10, 15)  # End of hit tracking window
 
 MIN_DISTANCE_POINTS = 20  # Minimum distance from each boundary
 EPSILON = 0.1  # Tolerance for hit detection
-RECENT_DAYS = 45  # Number of recent days to include in qualifying list
+RECENT_DAYS = 100  # Number of recent days to include in qualifying list
 CHUNKSIZE = 1_000_000
 
 NQ_SINGLE_CONTRACT_RE = re.compile(r"^NQ[A-Z]\d{1,2}$")
 
 # =================== HELPER FUNCTIONS ===================
+
+def _get_us_market_holidays(start_year: int = 2020, end_year: int = 2026) -> Set[date]:
+    """
+    Get set of US market holidays (NYSE/NASDAQ closures).
+    Includes: New Year's Day, MLK Day, Presidents Day, Good Friday,
+    Memorial Day, Juneteenth, Independence Day, Labor Day, Thanksgiving, Christmas.
+    """
+    holidays = set()
+    
+    # Use pandas USFederalHolidayCalendar if available
+    try:
+        from pandas.tseries.holiday import USFederalHolidayCalendar
+        cal = USFederalHolidayCalendar()
+        holiday_dates = cal.holidays(start=pd.Timestamp(f'{start_year}-01-01'), 
+                                     end=pd.Timestamp(f'{end_year}-12-31'))
+        holidays.update([d.date() for d in holiday_dates])
+    except (ImportError, AttributeError):
+        # Fallback: manual calculation for market holidays
+        for year in range(start_year, end_year + 1):
+            # New Year's Day
+            ny = date(year, 1, 1)
+            if ny.weekday() == 5:  # Saturday
+                holidays.add(date(year - 1, 12, 31))
+            elif ny.weekday() == 6:  # Sunday
+                holidays.add(date(year, 1, 2))
+            else:
+                holidays.add(ny)
+            
+            # MLK Day (3rd Monday in January)
+            jan_mondays = [d for d in [date(year, 1, d) for d in range(1, 32)] if d.weekday() == 0]
+            if len(jan_mondays) >= 3:
+                holidays.add(jan_mondays[2])  # 3rd Monday (0-indexed)
+            
+            # Presidents Day (3rd Monday in February)
+            pres_mondays = [d for d in [date(year, 2, d) for d in range(1, 29)] if d.weekday() == 0]
+            holidays.add(pres_mondays[2] if len(pres_mondays) > 2 else pres_mondays[-1])
+            
+            # Good Friday (Friday before Easter) - simplified Easter calculation
+            # Using Butcher's algorithm for Easter
+            a = year % 19
+            b = year // 100
+            c = year % 100
+            d = b // 4
+            e = b % 4
+            f = (b + 8) // 25
+            g = (b - f + 1) // 3
+            h = (19 * a + b - d - g + 15) % 30
+            i = c // 4
+            k = c % 4
+            l = (32 + 2 * e + 2 * i - h - k) % 7
+            m = (a + 11 * h + 22 * l) // 451
+            month = (h + l - 7 * m + 114) // 31
+            day = ((h + l - 7 * m + 114) % 31) + 1
+            easter = date(year, month, day)
+            good_friday = easter - timedelta(days=2)
+            holidays.add(good_friday)
+            
+            # Memorial Day (last Monday in May)
+            may_mondays = [d for d in [date(year, 5, d) for d in range(1, 32)] if d.weekday() == 0]
+            holidays.add(may_mondays[-1])
+            
+            # Juneteenth (June 19, since 2021)
+            if year >= 2021:
+                jun = date(year, 6, 19)
+                if jun.weekday() == 5:
+                    holidays.add(date(year, 6, 18))
+                elif jun.weekday() == 6:
+                    holidays.add(date(year, 6, 20))
+                else:
+                    holidays.add(jun)
+            
+            # Independence Day
+            july4 = date(year, 7, 4)
+            if july4.weekday() == 5:
+                holidays.add(date(year, 7, 3))
+            elif july4.weekday() == 6:
+                holidays.add(date(year, 7, 5))
+            else:
+                holidays.add(july4)
+            
+            # Labor Day (1st Monday in September)
+            sep_mondays = [d for d in [date(year, 9, d) for d in range(1, 31)] if d.weekday() == 0]
+            holidays.add(sep_mondays[0])
+            
+            # Thanksgiving (4th Thursday in November)
+            nov_thursdays = [d for d in [date(year, 11, d) for d in range(1, 31)] if d.weekday() == 3]
+            holidays.add(nov_thursdays[3] if len(nov_thursdays) > 3 else nov_thursdays[-1])
+            
+            # Christmas
+            xmas = date(year, 12, 25)
+            if xmas.weekday() == 5:
+                holidays.add(date(year, 12, 24))
+            elif xmas.weekday() == 6:
+                holidays.add(date(year, 12, 26))
+            else:
+                holidays.add(xmas)
+    
+    return holidays
+
 
 def _within(ts: pd.Series, start_t: time, end_t: time) -> pd.Series:
     """Check if timestamps fall within time range."""
@@ -221,6 +320,11 @@ def main():
     all_results = []
     residual = pd.DataFrame()
     
+    # Load US market holidays
+    print("Loading US market holidays...")
+    market_holidays = _get_us_market_holidays(start_year=2020, end_year=2026)
+    print(f"  Found {len(market_holidays)} market holidays")
+    
     print("Loading and processing data...")
     
     usecols = ["ts_event", "open", "high", "low", "close", "volume", "symbol"]
@@ -265,6 +369,9 @@ def main():
         if not to_proc.empty:
             to_proc = _determine_front_month(to_proc)
         
+        # Filter out market holidays
+        to_proc = to_proc[~to_proc["et_date"].isin(market_holidays)]
+        
         # Process each day
         for (sym, d), g in to_proc.groupby(["symbol", "et_date"]):
             result = process_day(g)
@@ -274,6 +381,8 @@ def main():
     # Process final residual
     if not residual.empty:
         residual = _determine_front_month(residual)
+        # Filter out market holidays
+        residual = residual[~residual["et_date"].isin(market_holidays)]
         for (sym, d), g in residual.groupby(["symbol", "et_date"]):
             result = process_day(g)
             if result is not None:

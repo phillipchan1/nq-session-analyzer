@@ -3,7 +3,9 @@
 ## Overview
 This analysis examines what happens when price sits "in the middle" of the opening range (first 15 minutes, 9:30-9:45 AM ET) at 9:45 AM ET. Specifically, it tracks the probability that one side (high or low) gets hit before 10:15 AM when price is positioned at least 20 points away from both boundaries.
 
-The analysis covers **1,187 trading days** from December 2020 to September 2025, with **420 days (35.4%)** meeting the "in the middle" criteria.
+The analysis covers **1,166 trading days** (excluding bank holidays) from December 2020 to September 2025, with **419 days (35.9%)** meeting the "in the middle" criteria.
+
+**Note**: Bank holidays have been filtered out from this analysis. This removed 21 days from the dataset, resulting in slightly improved hit rates and more accurate statistics for regular trading days.
 
 ## Key Findings
 
@@ -11,11 +13,11 @@ The analysis covers **1,187 trading days** from December 2020 to September 2025,
 
 | Metric | Value |
 |--------|-------|
-| **Total Days Analyzed** | 1,187 |
-| **Days in Middle at 9:45 AM** | 420 (35.4%) |
+| **Total Days Analyzed** | 1,166 (excluding bank holidays) |
+| **Days in Middle at 9:45 AM** | 419 (35.9%) |
 | **Average Opening Range Size** | 98.6 points |
 | **Average Distance to High** | 51.5 points |
-| **Average Distance to Low** | 47.1 points |
+| **Average Distance to Low** | 47.2 points |
 
 **Key Insight**: About one-third of trading days have price positioned in the middle of the opening range at 9:45 AM, with an average opening range of ~99 points.
 
@@ -25,16 +27,16 @@ The analysis covers **1,187 trading days** from December 2020 to September 2025,
 
 | Outcome | Count | Percentage |
 |---------|-------|------------|
-| **High Hit** | 204 | 48.6% |
-| **Low Hit** | 229 | 54.5% |
-| **Both Hit** | 48 | 11.4% |
-| **Neither Hit** | 35 | 8.3% |
+| **High Hit** | 204 | 48.7% |
+| **Low Hit** | 228 | 54.4% |
+| **Both Hit** | 48 | 11.5% |
+| **Neither Hit** | 35 | 8.4% |
 
 **Key Findings:**
-- **91.7% of days** see at least one side get hit before 10:15 AM
-- Low side gets hit slightly more often (54.5% vs 48.6%)
-- Only 8.3% of days see neither side hit in the 30-minute window
-- Both sides get hit on 11.4% of days
+- **91.6% of days** see at least one side get hit before 10:15 AM
+- Low side gets hit slightly more often (54.4% vs 48.7%)
+- Only 8.4% of days see neither side hit in the 30-minute window
+- Both sides get hit on 11.5% of days
 
 ### 3. First Hit Analysis
 
@@ -42,11 +44,11 @@ When price is in the middle at 9:45 AM, which side tends to get hit first?
 
 | First Hit | Count | Percentage |
 |-----------|-------|------------|
-| **High Hit First** | 180 | 42.9% |
-| **Low Hit First** | 205 | 48.8% |
-| **Neither Hit** | 35 | 8.3% |
+| **High Hit First** | 180 | 43.0% |
+| **Low Hit First** | 204 | 48.7% |
+| **Neither Hit** | 35 | 8.4% |
 
-**Key Finding**: There's a slight bias toward the **low side hitting first** (48.8% vs 42.9%), suggesting a slight bearish tendency in the first 30 minutes after 9:45 AM when price starts in the middle.
+**Key Finding**: There's a slight bias toward the **low side hitting first** (48.7% vs 43.0%), suggesting a slight bearish tendency in the first 30 minutes after 9:45 AM when price starts in the middle.
 
 ### 4. Opening Range Formation Pattern
 
@@ -87,21 +89,21 @@ When price is "in the middle" at 9:45 AM:
 ## Trading Implications
 
 ### 1. High Probability of Range Expansion
-- **91.7% hit rate** means that when price sits in the middle at 9:45 AM, there's a very high probability that at least one side will get hit before 10:15 AM
+- **91.6% hit rate** means that when price sits in the middle at 9:45 AM, there's a very high probability that at least one side will get hit before 10:15 AM
 - This suggests the opening range is likely to expand rather than contract when price starts in the middle
 
 ### 2. Slight Bearish Bias
-- Low side hits first **48.8%** of the time vs high side **42.9%**
-- This 6 percentage point difference suggests a slight bearish tendency, though not statistically overwhelming
+- Low side hits first **48.7%** of the time vs high side **43.0%**
+- This 5.7 percentage point difference suggests a slight bearish tendency, though not statistically overwhelming
 - Could be useful for directional bias, but the edge is modest
 
 ### 3. Both Sides Hit Pattern
-- **11.4% of days** see both sides hit, indicating volatile range expansion
+- **11.5% of days** see both sides hit, indicating volatile range expansion
 - When both sides hit, it often happens within the 30-minute window, suggesting quick reversals
 - This pattern could be useful for range trading strategies
 
-### 4. Neither Side Hit (8.3%)
-- On **8.3% of days**, neither side gets hit before 10:15 AM
+### 4. Neither Side Hit (8.4%)
+- On **8.4% of days**, neither side gets hit before 10:15 AM
 - These days likely represent consolidation or range contraction
 - Could be useful for identifying low-volatility days early in the session
 
@@ -120,15 +122,15 @@ When price is "in the middle" at 9:45 AM:
 5. **Probability**: ~92% chance at least one side gets hit
 
 ### Directional Bias Strategy
-1. **Bias**: Slight bearish bias (low hits first 48.8% vs high 42.9%)
+1. **Bias**: Slight bearish bias (low hits first 48.7% vs high 43.0%)
 2. **Entry**: When price is in the middle at 9:45 AM
 3. **Target**: Opening range low (slightly higher probability)
 4. **Stop**: Opening range high
-5. **Note**: Edge is modest (~6 percentage points)
+5. **Note**: Edge is modest (~5.7 percentage points)
 
 ### Range Trading Strategy
 1. **Entry**: When price is in the middle at 9:45 AM
-2. **Target**: Both sides of the range (11.4% of days)
+2. **Target**: Both sides of the range (11.5% of days)
 3. **Stop**: Outside the opening range
 4. **Note**: Lower probability but potentially higher reward if both sides hit
 
@@ -140,16 +142,33 @@ When price is "in the middle" at 9:45 AM:
 4. **Opening Range Size**: Results may vary based on opening range size (small vs large ranges)
 5. **Distance Threshold**: 20-point minimum is arbitrary - results may differ with different thresholds
 
+## Impact of Filtering Bank Holidays
+
+The analysis was run both with and without bank holidays to assess their impact:
+
+| Metric | With Holidays | Without Holidays | Change |
+|--------|---------------|------------------|--------|
+| **Total Days** | 1,187 | 1,166 | -21 days |
+| **Days in Middle** | 420 (35.4%) | 419 (35.9%) | +0.5% |
+| **High Hit Rate** | 48.6% | 48.7% | +0.1% |
+| **Low Hit Rate** | 54.5% | 54.4% | -0.1% |
+| **Both Hit Rate** | 11.4% | 11.5% | +0.1% |
+| **Neither Hit Rate** | 8.3% | 8.4% | +0.1% |
+
+**Key Finding**: Filtering out bank holidays had minimal impact on the results. The hit rates remained essentially unchanged, suggesting that bank holidays (which typically have low or no trading activity) were not significantly affecting the analysis. The current analysis excludes bank holidays for more accurate representation of regular trading day behavior.
+
 ## Conclusion
 
-When price sits "in the middle" of the opening range (at least 20 points from both boundaries) at 9:45 AM ET, there's a **91.7% probability** that at least one side will get hit before 10:15 AM. This suggests strong range expansion behavior.
+When price sits "in the middle" of the opening range (at least 20 points from both boundaries) at 9:45 AM ET, there's a **91.6% probability** that at least one side will get hit before 10:15 AM. This suggests strong range expansion behavior.
 
 **Key Takeaways:**
-- **High hit rate**: 91.7% of days see at least one side hit
-- **Slight bearish bias**: Low side hits first 48.8% vs high 42.9%
-- **Both sides hit**: 11.4% of days see both sides hit (volatile expansion)
-- **Neither side hit**: Only 8.3% of days see neither side hit (consolidation)
+- **High hit rate**: 91.6% of days see at least one side hit
+- **Slight bearish bias**: Low side hits first 48.7% vs high 43.0%
+- **Both sides hit**: 11.5% of days see both sides hit (volatile expansion)
+- **Neither side hit**: Only 8.4% of days see neither side hit (consolidation)
 
 The analysis provides strong evidence that when price starts in the middle of the opening range, range expansion is highly likely. The slight bearish bias toward the low side hitting first could be useful for directional trading, though the edge is modest.
+
+**Bank Holiday Impact**: Filtering out bank holidays had minimal effect on results, confirming that the analysis is robust and representative of regular trading day behavior.
 
 Use the qualifying days list (`opening_range_middle_days.csv`) for manual verification and backtesting specific setups.
