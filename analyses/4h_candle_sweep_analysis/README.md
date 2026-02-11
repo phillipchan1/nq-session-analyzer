@@ -124,3 +124,6 @@ Candles are aligned to specific ET start times:
 - **Side precedence**: Which side (high/low) tends to get swept first
 - **Horizon completion**: P(both sides swept by end of horizon | neither swept at candle_end)
 
+
+
+
