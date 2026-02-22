@@ -39,8 +39,8 @@ Note: You already have a `venv/` here; you can also activate and reuse it.
 
 ### 2) Data
 Place your 1-minute OHLCV CSV or ZST files in `data/`. This repo expects filenames like:
-- `glbx-mdp3-20200927-20250926.ohlcv-1m.csv`
-- `glbx-mdp3-20240926-20250925.ohlcv-1m.csv.zst`
+- `glbx-mdp3-20200927-20260221.ohlcv-1m.csv` (consolidated file covering Sept 2020 → Feb 2026)
+- `glbx-mdp3-20240926-20250925.ohlcv-1m.csv.zst` (example of compressed format)
 
 Macro calendar (for event-based analyses):
 - `data/us_high_impact_events_2020_to_2025.csv`

@@ -7,7 +7,7 @@ python confluence_analysis.py
 ```
 
 ## Inputs (from data/)
-- glbx-mdp3-20200927-20250926.ohlcv-1m.csv
+- glbx-mdp3-20200927-20260221.ohlcv-1m.csv
 
 ## Outputs
 - confluence_analysis.csv

@@ -6,7 +6,7 @@ from pathlib import Path
 # ========= USER SETTINGS =========
 DATA_DIR       = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR        = Path(__file__).resolve().parent
-DATA_PATH      = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")  # Databento 1m OHLCV CSV
+DATA_PATH      = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")  # Databento 1m OHLCV CSV
 SYMBOL_PREFIX  = "NQ"                  # filter outright NQ (no spreads)
 TZ             = "America/New_York"
 

@@ -6,7 +6,7 @@ from pathlib import Path
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
 
-df = pd.read_csv(str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv"))
+df = pd.read_csv(str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv"))
 
 # ==== 2. Data Cleaning ====
 # Remove anomalous prices

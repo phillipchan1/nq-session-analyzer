@@ -30,7 +30,7 @@ from collections import defaultdict
 # =================== CONFIG ===================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
-CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")
 
 RTH_START, RTH_END = time(9, 30), time(16, 0)
 NY_OPEN = time(9, 30)

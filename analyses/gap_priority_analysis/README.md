@@ -16,7 +16,7 @@ python gap_priority_analysis.py
 ```
 
 ## Inputs
-- `glbx-mdp3-20200927-20250926.ohlcv-1m.csv` (minute-level OHLCV data)
+- `glbx-mdp3-20200927-20260221.ohlcv-1m.csv` (minute-level OHLCV data)
 
 ## Outputs
 

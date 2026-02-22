@@ -51,7 +51,7 @@ import pytz
 # =================== CONFIG ===================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
-CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")
 OUT_EVENTS = str(OUT_DIR / "reversal_events.csv")
 OUT_SUMMARY = str(OUT_DIR / "reversal_summary.csv")
 

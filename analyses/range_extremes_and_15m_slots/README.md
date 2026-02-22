@@ -8,7 +8,7 @@ python range_and_intervals_analysis.py
 ```
 
 ## Inputs (from data/)
-- glbx-mdp3-20200927-20250926.ohlcv-1m.csv
+- glbx-mdp3-20200927-20260221.ohlcv-1m.csv
 - us_high_impact_events_2020_to_2025.csv
 
 ## Outputs

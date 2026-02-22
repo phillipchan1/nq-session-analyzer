@@ -31,7 +31,7 @@ from tqdm import tqdm
 # =================== CONFIG ===================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
-NQ_CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+NQ_CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")
 VIX_CSV_FILE = str(DATA_DIR / "xnas-itch-20201203-20251203.ohlcv-1m.csv")
 
 # Session time boundaries (ET)

@@ -102,7 +102,7 @@ python dump_day_analysis.py
 
 ## Data Requirements
 
-- `data/glbx-mdp3-20200927-20250926.ohlcv-1m.csv`: 1-minute OHLCV data
+- `data/glbx-mdp3-20200927-20260221.ohlcv-1m.csv`: 1-minute OHLCV data
 - `data/us_high_impact_events_2020_to_2025.csv`: Event calendar data
 
 ## Analysis Methodology

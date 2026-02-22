@@ -24,7 +24,7 @@ import pytz
 # =================== CONFIG ===================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
-CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")
 EVENTS_FILE = str(DATA_DIR / "us_high_impact_events_2020_to_2025.csv")
 
 # Threshold for an "extreme" RTH day range (points)

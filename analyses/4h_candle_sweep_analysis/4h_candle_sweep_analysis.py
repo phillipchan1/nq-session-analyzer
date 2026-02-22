@@ -25,7 +25,7 @@ from collections import defaultdict
 # =================== CONFIG ===================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 OUT_DIR = Path(__file__).resolve().parent
-CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20250926.ohlcv-1m.csv")
+CSV_FILE = str(DATA_DIR / "glbx-mdp3-20200927-20260221.ohlcv-1m.csv")
 DETAILED_OUT_FILE = str(OUT_DIR / "4h_candle_sweep_detailed.csv")
 SUMMARY_OUT_FILE = str(OUT_DIR / "4h_candle_sweep_summary.csv")
 DISTANCE_BUCKET_OUT_FILE = str(OUT_DIR / "4h_candle_sweep_distance_buckets.csv")

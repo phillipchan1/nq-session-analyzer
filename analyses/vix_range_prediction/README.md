@@ -10,7 +10,7 @@ The analysis builds predictive models using VIX metrics and overnight range to p
 
 ## Data Sources
 
-- **NQ Futures**: `data/glbx-mdp3-20200927-20250926.ohlcv-1m.csv` (1-minute bars)
+- **NQ Futures**: `data/glbx-mdp3-20200927-20260221.ohlcv-1m.csv` (1-minute bars)
 - **VIXY ETF**: `data/xnas-itch-20201203-20251203.ohlcv-1m.csv` (1-minute bars)
 
 **Analysis Period**: December 2020 to December 2025 (1,209 trading days)
