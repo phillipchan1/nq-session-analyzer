@@ -25,7 +25,27 @@ The study covers **1,388 qualifying days** from September 2020 through February 
 
 ---
 
-### 2. Distance Buckets — Proximity Drives Sweep Probability
+### 2. Cumulative Sweep by Window — When Does It Reach 90%+?
+
+| Window End | Either Swept | % |
+|------------|--------------|---|
+| 10:15 | 800 | 57.6% |
+| 10:30 | 970 | 69.9% |
+| 10:45 | 1,076 | 77.5% |
+| 11:00 | 1,133 | 81.6% |
+| 11:30 | 1,206 | 86.9% |
+| **12:00** | **1,243** | **89.6%** |
+| **12:30** | **1,269** | **91.4%** |
+| 13:00 | 1,280 | 92.2% |
+| 14:00 | 1,301 | 93.7% |
+| 15:00 | 1,326 | 95.5% |
+| 16:00 | 1,345 | 96.9% |
+
+**Key Insight**: The 90% threshold is crossed between 11:30 (86.9%) and 12:00 (89.6%). By **12:30 noon**, 91.4% of qualifying days have seen at least one side swept. By the close (4pm), 96.9% have swept at least one side.
+
+---
+
+### 3. Distance Buckets — Proximity Drives Sweep Probability (10:00-10:15)
 
 The closer price is to a side at 10:00, the more likely that side gets swept by 10:15.
 
@@ -147,8 +167,9 @@ When all three align:
 | File | Description |
 |------|-------------|
 | `4h_6am_sweep_summary.csv` | Overall sweep counts and percentages |
+| `4h_6am_sweep_cumulative.csv` | Cumulative sweep rate by window (10:15 through 16:00) |
 | `4h_6am_sweep_distance_buckets.csv` | Sweep rate by distance bucket (high/low) |
-| `4h_6am_sweep_detailed.csv` | Per-day rows with all 34 factor columns for backtesting |
+| `4h_6am_sweep_detailed.csv` | Per-day rows with all factor columns + cumulative sweep flags for backtesting |
 | `4h_6am_sweep_factor_analysis.csv` | Sweep rates bucketed by each predictive factor |
 
 Filter `4h_6am_sweep_detailed.csv` for `either_swept == 1` to get the 800 days for manual backtesting on FXReplay/Tradezella.

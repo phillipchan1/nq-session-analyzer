@@ -53,6 +53,22 @@ SUMMARY_OUT = str(OUT_DIR / "4h_6am_sweep_summary.csv")
 BUCKETS_OUT = str(OUT_DIR / "4h_6am_sweep_distance_buckets.csv")
 DETAILED_OUT = str(OUT_DIR / "4h_6am_sweep_detailed.csv")
 FACTOR_OUT = str(OUT_DIR / "4h_6am_sweep_factor_analysis.csv")
+CUMULATIVE_OUT = str(OUT_DIR / "4h_6am_sweep_cumulative.csv")
+
+# Cumulative sweep windows: (label, end_time) — "either swept by end_time"
+CUMULATIVE_WINDOWS = [
+    ("10:15", time(10, 15)),
+    ("10:30", time(10, 30)),
+    ("10:45", time(10, 45)),
+    ("11:00", time(11, 0)),
+    ("11:30", time(11, 30)),
+    ("12:00", time(12, 0)),
+    ("12:30", time(12, 30)),
+    ("13:00", time(13, 0)),
+    ("14:00", time(14, 0)),
+    ("15:00", time(15, 0)),
+    ("16:00", time(16, 0)),
+]
 
 # External data for factor enrichment
 EVENTS_FILE = str(DATA_DIR / "us_high_impact_events_2020_to_2025.csv")
@@ -215,10 +231,18 @@ def _process_day(g, d, events_lk, levels_lk, vixy_lk):
     if max(dist_to_high, dist_to_low) < MIN_DISTANCE:
         return None
 
-    # -- sweep check --
+    # -- sweep check (10:00-10:15) --
     sweep_bars = g.loc[_within(g["ts_et"], SWEEP_START, SWEEP_END)]
     h_swept, h_time, _ = _check_sweep(sweep_bars, candle_high, is_high=True)
     l_swept, l_time, _ = _check_sweep(sweep_bars, candle_low, is_high=False)
+
+    # -- cumulative sweep by window (10:00 through each end time) --
+    cum_sweep = {}
+    for label, end_t in CUMULATIVE_WINDOWS:
+        cum_bars = g.loc[_within(g["ts_et"], SWEEP_START, end_t)]
+        h_c, _, _ = _check_sweep(cum_bars, candle_high, is_high=True)
+        l_c, _, _ = _check_sweep(cum_bars, candle_low, is_high=False)
+        cum_sweep[f"either_swept_by_{label.replace(':', '')}"] = int(h_c or l_c)
 
     rec = {
         "candle_high": candle_high,
@@ -235,6 +259,7 @@ def _process_day(g, d, events_lk, levels_lk, vixy_lk):
         "high_sweep_time": h_time,
         "low_sweep_time": l_time,
     }
+    rec.update(cum_sweep)
 
     # ======== TIER 1 FACTORS ========
 
@@ -519,12 +544,15 @@ def main():
 
     # ---- detailed CSV ----
     detail = pd.DataFrame(all_detail)
+    cum_cols = [f"either_swept_by_{lbl.replace(':', '')}" for lbl, _ in CUMULATIVE_WINDOWS]
     col_order = [
         # core
         "date", "symbol", "candle_high", "candle_low", "candle_open",
         "candle_close", "candle_range", "dist_to_high", "dist_to_low",
         "high_swept", "low_swept", "either_swept", "both_swept",
         "high_sweep_time", "low_sweep_time",
+        # cumulative
+        *cum_cols,
         # tier 1
         "close_position", "last_15m_direction", "last_15m_range",
         "last_15m_body_pct", "high_set_time", "low_set_time",
@@ -603,6 +631,22 @@ def main():
         print(f"✅ Wrote {BUCKETS_OUT}")
         print()
         print(buckets.to_string(index=False))
+
+    # ---- cumulative sweep by window ----
+    cum_rows = []
+    for lbl, _ in CUMULATIVE_WINDOWS:
+        col = f"either_swept_by_{lbl.replace(':', '')}"
+        if col not in detail.columns:
+            continue
+        cnt = int(detail[col].sum())
+        p = round(100 * cnt / n, 1)
+        cum_rows.append({"window_end": lbl, "either_swept": cnt, "either_swept_pct": p})
+    if cum_rows:
+        cum_df = pd.DataFrame(cum_rows)
+        cum_df.to_csv(CUMULATIVE_OUT, index=False)
+        print(f"\n✅ Wrote {CUMULATIVE_OUT}")
+        print("\nCumulative sweep by window (either side swept by end of window):")
+        print(cum_df.to_string(index=False))
 
     # ---- factor analysis ----
     factor_df = _build_factor_analysis(detail)
