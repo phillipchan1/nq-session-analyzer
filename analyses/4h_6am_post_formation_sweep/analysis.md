@@ -2,7 +2,7 @@
 
 ## Overview
 
-At 10:00 AM ET the 6am 4H candle (6:00-10:00) is fully formed. This analysis asks: **if the 10:00 close is at least 20 points from one side of the candle, how often does price sweep (strict takeout, >= 1 NQ tick beyond) at least one side in the 10:00-10:15 macro?**
+At 10:00 AM ET the 6am 4H candle (6:00-10:00) is fully formed. This analysis asks: **if the 10:00 close is at least 20 points from one side of the candle, how often does price sweep (strict takeout, >= 1 NQ tick beyond) at least one side in the 10:00-10:15 macro?** A sweep only counts when **that side** was at least 20 points away at 10:00 (so "gimme" sweeps where price was already within 20 pts of that level are excluded).
 
 The study covers **1,388 qualifying days** from September 2020 through February 2026. A day qualifies when `max(dist_to_high, dist_to_low) >= 20` at 10:00 AM.
 
@@ -10,38 +10,38 @@ The study covers **1,388 qualifying days** from September 2020 through February 
 
 ## Key Findings
 
-### 1. Overall Sweep Probabilities
+### 1. Overall Sweep Probabilities (meaningful only: swept side ≥ 20 pts at 10:00)
 
 | Metric | Count | % |
 |--------|-------|---|
 | **Qualifying Days** | 1,388 | — |
-| **Either Side Swept** | 800 | **57.6%** |
-| High Swept | 415 | 29.9% |
-| Low Swept | 393 | 28.3% |
-| Both Swept | 8 | 0.6% |
-| Neither Swept | 588 | 42.4% |
+| **Either Side Swept** | 368 | **26.5%** |
+| High Swept | 158 | 11.4% |
+| Low Swept | 213 | 15.3% |
+| Both Swept | 3 | 0.2% |
+| Neither Swept | 1,020 | 73.5% |
 
-**Key Insight**: More than half the time, at least one side of the fully-formed 6am 4H candle gets swept in just 15 minutes (10:00-10:15).
+**Key Insight**: When the swept side was at least 20 points away at 10:00, about one in four days sees that side get swept in 10:00-10:15.
 
 ---
 
-### 2. Cumulative Sweep by Window — When Does It Reach 90%+?
+### 2. Cumulative Sweep by Window (meaningful only)
 
 | Window End | Either Swept | % |
 |------------|--------------|---|
-| 10:15 | 800 | 57.6% |
-| 10:30 | 970 | 69.9% |
-| 10:45 | 1,076 | 77.5% |
-| 11:00 | 1,133 | 81.6% |
-| 11:30 | 1,206 | 86.9% |
-| **12:00** | **1,243** | **89.6%** |
-| **12:30** | **1,269** | **91.4%** |
-| 13:00 | 1,280 | 92.2% |
-| 14:00 | 1,301 | 93.7% |
-| 15:00 | 1,326 | 95.5% |
-| 16:00 | 1,345 | 96.9% |
+| 10:15 | 368 | 26.5% |
+| 10:30 | 526 | 37.9% |
+| 10:45 | 630 | 45.4% |
+| 11:00 | 688 | 49.6% |
+| 11:30 | 774 | 55.8% |
+| 12:00 | 819 | 59.0% |
+| 12:30 | 855 | 61.6% |
+| 13:00 | 873 | 62.9% |
+| 14:00 | 905 | 65.2% |
+| 15:00 | 944 | 68.0% |
+| 16:00 | 975 | 70.2% |
 
-**Key Insight**: The 90% threshold is crossed between 11:30 (86.9%) and 12:00 (89.6%). By **12:30 noon**, 91.4% of qualifying days have seen at least one side swept. By the close (4pm), 96.9% have swept at least one side.
+**Key Insight**: With the "swept side ≥ 20 pts" rule, by 10:15 about 26.5% have a meaningful sweep; by 4pm about 70% have had at least one meaningful sweep.
 
 ---
 

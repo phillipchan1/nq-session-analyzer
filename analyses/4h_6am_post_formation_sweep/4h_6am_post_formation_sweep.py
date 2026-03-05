@@ -6,7 +6,9 @@ At 10:00 AM ET the 6am 4H candle (6:00-10:00) is fully formed.
 
 Core question: if the 10:00 close is at least MIN_DISTANCE points from
 one side of the candle, how often does price sweep (strict takeout, >= 1
-NQ tick beyond) at least one side in the 10:00-10:15 macro?
+NQ tick beyond) at least one side in the 10:00-10:15 macro? A sweep only
+counts if that side was at least MIN_DISTANCE points away at 10:00 (so
+"gimme" sweeps where price was already within 20 pts are excluded).
 
 Enhanced with predictive factors across three tiers:
 
@@ -237,12 +239,16 @@ def _process_day(g, d, events_lk, levels_lk, vixy_lk):
     l_swept, l_time, _ = _check_sweep(sweep_bars, candle_low, is_high=False)
 
     # -- cumulative sweep by window (10:00 through each end time) --
+    # Only count a sweep if that side was at least MIN_DISTANCE away at 10:00
     cum_sweep = {}
     for label, end_t in CUMULATIVE_WINDOWS:
         cum_bars = g.loc[_within(g["ts_et"], SWEEP_START, end_t)]
         h_c, _, _ = _check_sweep(cum_bars, candle_high, is_high=True)
         l_c, _, _ = _check_sweep(cum_bars, candle_low, is_high=False)
-        cum_sweep[f"either_swept_by_{label.replace(':', '')}"] = int(h_c or l_c)
+        meaningful = (h_c and dist_to_high >= MIN_DISTANCE) or (
+            l_c and dist_to_low >= MIN_DISTANCE
+        )
+        cum_sweep[f"either_swept_by_{label.replace(':', '')}"] = int(meaningful)
 
     rec = {
         "candle_high": candle_high,
@@ -383,7 +389,7 @@ def _bucket_analysis(detail, factor_col, buckets, swept_cols):
 
 
 def _build_factor_analysis(detail):
-    swept_cols = ["high_swept", "low_swept", "either_swept"]
+    swept_cols = ["meaningful_high_swept", "meaningful_low_swept", "either_swept_by_1015"]
     all_rows = []
 
     # Close position (0=at low, 1=at high)
@@ -569,22 +575,27 @@ def main():
     detail.to_csv(DETAILED_OUT, index=False)
     print(f"\n✅ Wrote {DETAILED_OUT}  ({len(detail)} rows)")
 
-    # ---- summary ----
+    # ---- summary (meaningful sweeps only: swept side was >= MIN_DISTANCE at 10:00) ----
     n = len(detail)
     pct = lambda v: round(100 * v / n, 1) if n else 0.0
 
-    h_swept = int(detail["high_swept"].sum())
-    l_swept = int(detail["low_swept"].sum())
-    either = int(detail["either_swept"].sum())
-    both = int(detail["both_swept"].sum())
+    meaningful_high = (detail["high_swept"] & (detail["dist_to_high"] >= MIN_DISTANCE)).sum()
+    meaningful_low = (detail["low_swept"] & (detail["dist_to_low"] >= MIN_DISTANCE)).sum()
+    either = int(detail["either_swept_by_1015"].sum())
+    both = int(
+        (
+            (detail["high_swept"] & (detail["dist_to_high"] >= MIN_DISTANCE))
+            & (detail["low_swept"] & (detail["dist_to_low"] >= MIN_DISTANCE))
+        ).sum()
+    )
     neither = n - either
 
     summary = pd.DataFrame([{
         "qualifying_days": n,
-        "high_swept": h_swept,
-        "high_swept_pct": pct(h_swept),
-        "low_swept": l_swept,
-        "low_swept_pct": pct(l_swept),
+        "high_swept": int(meaningful_high),
+        "high_swept_pct": pct(meaningful_high),
+        "low_swept": int(meaningful_low),
+        "low_swept_pct": pct(meaningful_low),
         "either_swept": either,
         "either_swept_pct": pct(either),
         "both_swept": both,
@@ -648,7 +659,10 @@ def main():
         print("\nCumulative sweep by window (either side swept by end of window):")
         print(cum_df.to_string(index=False))
 
-    # ---- factor analysis ----
+    # ---- factor analysis (meaningful sweeps only) ----
+    detail = detail.copy()
+    detail["meaningful_high_swept"] = detail["high_swept"] & (detail["dist_to_high"] >= MIN_DISTANCE)
+    detail["meaningful_low_swept"] = detail["low_swept"] & (detail["dist_to_low"] >= MIN_DISTANCE)
     factor_df = _build_factor_analysis(detail)
     if not factor_df.empty:
         factor_df.to_csv(FACTOR_OUT, index=False)
