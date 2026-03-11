@@ -44,7 +44,7 @@ python opening_range_middle_analysis.py
      - Average distances and opening range sizes
 
 2. **opening_range_middle_days.csv**
-   - List of the last 45 days where price was in the middle at 9:45 AM
+   - List of the last 100 days where price was in the middle at 9:45 AM
    - Includes:
      - Date, symbol
      - Opening range high/low and size
@@ -52,9 +52,15 @@ python opening_range_middle_analysis.py
      - Distance to high/low
      - Which side hit (high/low/both/neither)
      - Time of first hit (if any)
+     - **minutes_after_formation** - minutes from 9:45 to first sweep
+     - **macro_15m** - which 15m candle (9:45, 10:00) the first sweep occurred in
    - Use this list for manual verification and backtesting setups
 
-3. **opening_range_middle_detailed.csv**
+3. **opening_range_middle_sweep_timing.csv**
+   - Distribution of when the first sweep occurs (minutes after 9:45 formation)
+   - 5-minute buckets (0-5, 5-10, 10-15, etc.) with count and percentage
+
+4. **opening_range_middle_detailed.csv**
    - Complete results for all trading days analyzed
    - Includes both days where price was in middle and days where it wasn't
    - Useful for deeper analysis and filtering

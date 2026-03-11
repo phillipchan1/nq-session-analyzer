@@ -61,18 +61,36 @@ The analysis also tracks which side of the opening range forms first:
 
 **Note**: This data is tracked per day but not aggregated in summary stats. The pattern of which side forms first may influence which side gets hit first - this could be explored further.
 
-### 5. Hit Timing Analysis
+### 5. Sweep Timing Analysis (When Does the First Sweep Happen?)
 
-From the qualifying days list (last 45 days), we can observe hit timing patterns:
+Formation is at 9:45 AM. For days where at least one side gets swept (91.8% of middle days):
 
-- **Early Hits**: Many hits occur within the first 5-10 minutes after 9:45 AM
-- **Late Hits**: Some hits occur closer to 10:15 AM
-- **Both Sides**: When both sides hit, there's often a quick reversal pattern
+| Metric | Value |
+|--------|-------|
+| **Avg minutes to first sweep** | 8.6 min |
+| **Median minutes to first sweep** | 6.0 min |
+| **9:45-10:00 15m macro** | 76.3% |
+| **10:00-10:15 15m macro** | 23.7% |
+
+**Key Insight**: The sweep is **most likely to happen in the 9:45 15m candle** (9:45-10:00), not the 10:00 candle. On average it happens ~9 minutes after formation, with median at 6 minutes.
+
+#### Minutes-After-Formation Distribution
+
+| Minutes Bucket | Count | % |
+|---------------|-------|---|
+| 0-5 min | 162 | 37.9% |
+| 5-10 min | 124 | 29.0% |
+| 10-15 min | 40 | 9.4% |
+| 15-20 min | 60 | 14.1% |
+| 20-25 min | 21 | 4.9% |
+| 25-30 min | 20 | 4.7% |
+
+**Summary**: ~67% of sweeps happen within the first 10 minutes; ~76% within the 9:45-10:00 macro. If it hasn't swept by 10:00, there's still ~24% chance it will in the next 15 minutes.
 
 **Example from Recent Data:**
-- 2025-09-26: High hit at 9:50 AM, Low hit at 10:11 AM (high hit first)
-- 2025-09-25: High hit at 10:10 AM, Low did not hit
-- 2025-09-03: Low hit at 9:48 AM, High hit at 10:03 AM (low hit first)
+- 2025-09-26: High hit at 9:50 AM (5 min), Low hit at 10:11 AM (high hit first)
+- 2025-09-25: High hit at 10:10 AM (25 min)
+- 2025-09-03: Low hit at 9:48 AM (3 min), High hit at 10:03 AM (low hit first)
 
 ### 6. Distance Analysis
 
@@ -112,6 +130,12 @@ When price is "in the middle" at 9:45 AM:
 - When price is in the middle, traders have ~50 points of room on each side
 - This suggests reasonable profit targets if trading range expansion
 
+### 6. Sweep Timing — When to Expect the Hit
+- **Median 6 min, avg 9 min** after 9:45 formation
+- **76% of sweeps** occur in the 9:45-10:00 15m candle; only 24% in the 10:00-10:15 candle
+- **67% happen within 10 minutes** — if no sweep by 9:55, expect it may take another 5-15 min
+- If no sweep by 10:00, ~24% still sweep in the next 15 minutes
+
 ## Strategy Considerations
 
 ### Range Expansion Strategy
@@ -120,6 +144,7 @@ When price is "in the middle" at 9:45 AM:
 3. **Stop**: Opposite side of the range
 4. **Time Window**: 9:45 AM - 10:15 AM
 5. **Probability**: ~92% chance at least one side gets hit
+6. **Timing**: Expect the sweep in the **9:45-10:00 macro** (76%); median 6 min, avg 9 min after formation
 
 ### Directional Bias Strategy
 1. **Bias**: Slight bearish bias (low hits first 48.7% vs high 43.0%)
@@ -163,6 +188,7 @@ When price sits "in the middle" of the opening range (at least 20 points from bo
 
 **Key Takeaways:**
 - **High hit rate**: 91.6% of days see at least one side hit
+- **Sweep timing**: Median 6 min, avg 9 min after 9:45; 76% in 9:45-10:00 macro, 24% in 10:00-10:15
 - **Slight bearish bias**: Low side hits first 48.7% vs high 43.0%
 - **Both sides hit**: 11.5% of days see both sides hit (volatile expansion)
 - **Neither side hit**: Only 8.4% of days see neither side hit (consolidation)

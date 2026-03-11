@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Set
 import pandas as pd
 import numpy as np
-from datetime import time, timedelta, date
+from datetime import time, timedelta, date, datetime
 import pytz
 from tqdm import tqdm
 from collections import defaultdict
@@ -290,6 +290,30 @@ def process_day(g: pd.DataFrame) -> Optional[Dict]:
     # Check hits in 9:45-10:15 window
     hit_results = check_hits(g, or_high, or_low, CHECK_TIME, HIT_WINDOW_END)
     
+    # Compute first hit time and minutes after formation (9:45)
+    first_hit_time = None
+    minutes_after_formation = None
+    macro_15m = None  # Which 15m candle: "9:45", "10:00", or None
+    if hit_results['first_hit'] == 'high':
+        first_hit_time = hit_results['high_hit_time']
+    elif hit_results['first_hit'] == 'low':
+        first_hit_time = hit_results['low_hit_time']
+    
+    if first_hit_time is not None:
+        day_date = g["et_date"].iloc[0]
+        tz_et = pytz.timezone("US/Eastern")
+        formation_dt = tz_et.localize(datetime.combine(day_date, time(9, 45)))
+        # Handle pandas Timestamp
+        hit_ts = pd.Timestamp(first_hit_time) if not isinstance(first_hit_time, pd.Timestamp) else first_hit_time
+        minutes_after_formation = (hit_ts - formation_dt).total_seconds() / 60
+        t = first_hit_time.time()
+        if t < time(10, 0):
+            macro_15m = "9:45"   # 9:45-10:00 15m candle
+        elif t < time(10, 15):
+            macro_15m = "10:00"   # 10:00-10:15 15m candle
+        else:
+            macro_15m = "10:15"   # edge case
+    
     # Build result dict
     result = {
         'date': g["et_date"].iloc[0],
@@ -307,6 +331,9 @@ def process_day(g: pd.DataFrame) -> Optional[Dict]:
         'high_hit_time': hit_results['high_hit_time'],
         'low_hit_time': hit_results['low_hit_time'],
         'first_hit': hit_results['first_hit'],
+        'first_hit_time': first_hit_time,
+        'minutes_after_formation': minutes_after_formation,
+        'macro_15m': macro_15m,
     }
     
     return result
@@ -425,6 +452,21 @@ def main():
     first_high_rate = first_high_count / middle_days * 100
     first_low_rate = first_low_count / middle_days * 100
     
+    # Sweep timing analysis (for days where at least one side got hit)
+    df_hit = df_middle[df_middle["first_hit"] != "neither"]
+    hit_count = len(df_hit)
+    avg_minutes = df_hit["minutes_after_formation"].mean() if hit_count > 0 else None
+    median_minutes = df_hit["minutes_after_formation"].median() if hit_count > 0 else None
+    
+    # 15m macro distribution (9:45 = 9:45-10:00 candle, 10:00 = 10:00-10:15 candle)
+    macro_counts = df_hit["macro_15m"].value_counts()
+    macro_945_count = macro_counts.get("9:45", 0)
+    macro_1000_count = macro_counts.get("10:00", 0)
+    macro_1015_count = macro_counts.get("10:15", 0)
+    macro_945_pct = macro_945_count / hit_count * 100 if hit_count > 0 else 0
+    macro_1000_pct = macro_1000_count / hit_count * 100 if hit_count > 0 else 0
+    macro_1015_pct = macro_1015_count / hit_count * 100 if hit_count > 0 else 0
+    
     # Average metrics
     avg_dist_to_high = df_middle["dist_to_high"].mean()
     avg_dist_to_low = df_middle["dist_to_low"].mean()
@@ -451,6 +493,16 @@ def main():
             'avg_dist_to_high',
             'avg_dist_to_low',
             'avg_opening_range_size',
+            # Sweep timing (formation at 9:45, for days with at least one hit)
+            'days_with_sweep',
+            'avg_minutes_to_first_sweep',
+            'median_minutes_to_first_sweep',
+            'macro_945_count',
+            'macro_945_pct',
+            'macro_1000_count',
+            'macro_1000_pct',
+            'macro_1015_count',
+            'macro_1015_pct',
         ],
         'value': [
             total_days,
@@ -471,6 +523,15 @@ def main():
             avg_dist_to_high,
             avg_dist_to_low,
             avg_or_range,
+            hit_count,
+            avg_minutes if avg_minutes is not None else np.nan,
+            median_minutes if median_minutes is not None else np.nan,
+            macro_945_count,
+            macro_945_pct,
+            macro_1000_count,
+            macro_1000_pct,
+            macro_1015_count,
+            macro_1015_pct,
         ]
     }
     
@@ -478,6 +539,23 @@ def main():
     summary_file = OUT_DIR / "opening_range_middle_summary.csv"
     df_summary.to_csv(summary_file, index=False)
     print(f"\nSummary statistics saved to: {summary_file}")
+    
+    # Sweep timing distribution (by 5-min buckets and by 15m macro)
+    if hit_count > 0:
+        timing_dist = []
+        for bucket_min in range(0, 35, 5):  # 0-5, 5-10, ..., 30-35 min
+            count = ((df_hit["minutes_after_formation"] >= bucket_min) &
+                     (df_hit["minutes_after_formation"] < bucket_min + 5)).sum()
+            pct = count / hit_count * 100
+            timing_dist.append({
+                "minutes_bucket": f"{bucket_min}-{bucket_min + 5}",
+                "count": count,
+                "pct": pct,
+            })
+        df_timing = pd.DataFrame(timing_dist)
+        timing_file = OUT_DIR / "opening_range_middle_sweep_timing.csv"
+        df_timing.to_csv(timing_file, index=False)
+        print(f"Sweep timing distribution saved to: {timing_file}")
     
     # Create detailed results file
     detailed_file = OUT_DIR / "opening_range_middle_detailed.csv"
@@ -505,6 +583,7 @@ def main():
         'high_formed_first',
         'high_hit', 'low_hit', 'first_hit',
         'high_hit_time_str', 'low_hit_time_str',
+        'minutes_after_formation', 'macro_15m',
     ]
     
     df_qualifying_output = df_qualifying[qualifying_cols].copy()
@@ -526,6 +605,15 @@ def main():
     print(f"\nFirst Hit Statistics:")
     print(f"  High hit first: {first_high_count} ({first_high_rate:.1f}%)")
     print(f"  Low hit first: {first_low_count} ({first_low_rate:.1f}%)")
+    if hit_count > 0:
+        print(f"\nSweep Timing (formation at 9:45, {hit_count} days with sweep):")
+        print(f"  Avg minutes to first sweep: {avg_minutes:.1f} min")
+        print(f"  Median minutes to first sweep: {median_minutes:.1f} min")
+        print(f"  15m macro distribution:")
+        print(f"    9:45-10:00 candle: {macro_945_count} ({macro_945_pct:.1f}%)")
+        print(f"    10:00-10:15 candle: {macro_1000_count} ({macro_1000_pct:.1f}%)")
+        if macro_1015_count > 0:
+            print(f"    10:15+ candle: {macro_1015_count} ({macro_1015_pct:.1f}%)")
     print(f"\nAverage Metrics:")
     print(f"  Avg distance to high: {avg_dist_to_high:.2f} points")
     print(f"  Avg distance to low: {avg_dist_to_low:.2f} points")

@@ -10,6 +10,7 @@ python "$root_dir/analyses/ny_open_45m_range_vs_events/backtest.py"
 python "$root_dir/analyses/ny_open_45m_range_vs_events/analyze_volume.py"
 
 # Medium
+python "$root_dir/analyses/ny_open_liquidity_sweeps/ny_open_liquidity_analysis.py"
 python "$root_dir/analyses/london_swing_hits_at_open/london_hl.py"
 python "$root_dir/analyses/range_extremes_and_15m_slots/range_and_intervals_analysis.py"
 
