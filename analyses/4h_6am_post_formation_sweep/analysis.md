@@ -6,6 +6,13 @@ At 10:00 AM ET the 6am 4H candle (6:00-10:00) is fully formed. This analysis ask
 
 The study covers **1,388 qualifying days** from September 2020 through February 2026. A day qualifies when `max(dist_to_high, dist_to_low) >= 20` at 10:00 AM.
 
+### Raw vs Meaningful Sweep
+
+- **Raw sweep**: Price goes beyond the 6am high or low by ≥1 NQ tick (0.25 pts) during 10:00–16:00. No distance filter.
+- **Meaningful sweep**: Same as raw, but the swept side must have been ≥20 pts away at 10:00. Excludes "gimme" sweeps (price was already close to that level).
+
+By 4pm, **~97%** of qualifying days have at least one **raw** sweep; **~70%** have a **meaningful** sweep. The 30% "no meaningful sweep" includes many days where price *did* sweep the close side (gimme)—those don't count. For verification, use `no_raw_sweep_by_4pm.csv` (43 days) as the true "never swept" list.
+
 ---
 
 ## Key Findings
@@ -166,10 +173,11 @@ When all three align:
 
 | File | Description |
 |------|-------------|
-| `4h_6am_sweep_summary.csv` | Overall sweep counts and percentages |
+| `4h_6am_sweep_summary.csv` | Overall sweep counts and percentages (meaningful only) |
 | `4h_6am_sweep_cumulative.csv` | Cumulative sweep rate by window (10:15 through 16:00) |
 | `4h_6am_sweep_distance_buckets.csv` | Sweep rate by distance bucket (high/low) |
-| `4h_6am_sweep_detailed.csv` | Per-day rows with all factor columns + cumulative sweep flags for backtesting |
+| `4h_6am_sweep_detailed.csv` | Per-day rows with all factor columns + cumulative sweep flags + raw sweep flags |
 | `4h_6am_sweep_factor_analysis.csv` | Sweep rates bucketed by each predictive factor |
+| `no_raw_sweep_by_4pm.csv` | **43 days** where price never swept either 6am level by 4pm (raw, no 20-pt filter)—use for chart verification |
 
 Filter `4h_6am_sweep_detailed.csv` for `either_swept == 1` to get the 800 days for manual backtesting on FXReplay/Tradezella.

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "description": "Acceptance criteria for promoting a backtested pattern idea into the repo's 'approved' set.",
+  "source_gates": {
+    "min_claimed_probability": 0.90,
+    "min_corroboration_count": 2,
+    "required_statuses": ["Queued for Backtest", "In Progress"]
+  },
+  "backtest_gates": {
+    "evaluation_primary_window": "first_45m_9_30_to_10_15_et",
+    "min_occurrences": 30,
+    "min_hit_rate": 0.60,
+    "min_risk_reward": 1.0,
+    "time_to_event_median_minutes_max": 20,
+    "stat_sig": {
+      "enabled": false,
+      "method": "binomial_two_sided",
+      "alpha": 0.05,
+      "min_power_hint": null
+    }
+  },
+  "promotion_policy": {
+    "requires_manual_approval": true,
+    "manual_approval_field": "Phil Approved",
+    "promotion_destination": "approved_patterns.json",
+    "note": "When requires_manual_approval=true, the automation only pre-screens and prepares a candidate entry."
+  }
+}

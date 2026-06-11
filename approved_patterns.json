@@ -1,0 +1,41 @@
+[
+  {
+    "note": "This file is managed by pattern promotion automation. It is append-only and does not alter core analysis code."
+  },
+  {
+    "ts": "2026-04-07T08:02:48.169027",
+    "notion_page_id": "330e2f0e-7760-813a-a678-f027c4383703",
+    "pattern_name": "330e2f0e-7760-813a-a678-f027c4383703",
+    "template": "touch_weekly_open_on_tuesday_near_weekly_open",
+    "side": "high",
+    "occurrences": 70,
+    "hit_rate": 0.9142857142857143,
+    "min_occurrences": 30,
+    "min_hit_rate": 0.6,
+    "note": "Auto-appended after automated criteria pass; you can still manually review."
+  },
+  {
+    "ts": "2026-04-07T08:02:50.547563",
+    "notion_page_id": "330e2f0e-7760-817c-801b-ea27f528f33a",
+    "pattern_name": "330e2f0e-7760-817c-801b-ea27f528f33a",
+    "template": "touch_weekly_open_on_tuesday_near_weekly_open",
+    "side": "high",
+    "occurrences": 70,
+    "hit_rate": 0.9142857142857143,
+    "min_occurrences": 30,
+    "min_hit_rate": 0.6,
+    "note": "Auto-appended after automated criteria pass; you can still manually review."
+  },
+  {
+    "ts": "2026-04-07T08:02:54.228043",
+    "notion_page_id": "32ee2f0e-7760-8165-b537-c2bd4cc60da9",
+    "pattern_name": "32ee2f0e-7760-8165-b537-c2bd4cc60da9",
+    "template": "pdh_test_on_tuesday_gap_up",
+    "side": "high",
+    "occurrences": 145,
+    "hit_rate": 0.7310344827586207,
+    "min_occurrences": 30,
+    "min_hit_rate": 0.6,
+    "note": "Auto-appended after automated criteria pass; you can still manually review."
+  }
+]

@@ -56,6 +56,9 @@ BUCKETS_OUT = str(OUT_DIR / "4h_6am_sweep_distance_buckets.csv")
 DETAILED_OUT = str(OUT_DIR / "4h_6am_sweep_detailed.csv")
 FACTOR_OUT = str(OUT_DIR / "4h_6am_sweep_factor_analysis.csv")
 CUMULATIVE_OUT = str(OUT_DIR / "4h_6am_sweep_cumulative.csv")
+NO_RAW_SWEEP_OUT = str(OUT_DIR / "no_raw_sweep_by_4pm.csv")
+NO_RAW_SWEEP_11AM_OUT = str(OUT_DIR / "no_raw_sweep_by_11am.csv")
+NO_RAW_SWEEP_2PM_OUT = str(OUT_DIR / "no_raw_sweep_by_2pm.csv")  # next 4H candle (10am-2pm)
 
 # Cumulative sweep windows: (label, end_time) — "either swept by end_time"
 CUMULATIVE_WINDOWS = [
@@ -239,7 +242,8 @@ def _process_day(g, d, events_lk, levels_lk, vixy_lk):
     l_swept, l_time, _ = _check_sweep(sweep_bars, candle_low, is_high=False)
 
     # -- cumulative sweep by window (10:00 through each end time) --
-    # Only count a sweep if that side was at least MIN_DISTANCE away at 10:00
+    # Meaningful: only count if swept side was at least MIN_DISTANCE away at 10:00
+    # Raw: count any sweep (no distance filter)
     cum_sweep = {}
     for label, end_t in CUMULATIVE_WINDOWS:
         cum_bars = g.loc[_within(g["ts_et"], SWEEP_START, end_t)]
@@ -249,6 +253,15 @@ def _process_day(g, d, events_lk, levels_lk, vixy_lk):
             l_c and dist_to_low >= MIN_DISTANCE
         )
         cum_sweep[f"either_swept_by_{label.replace(':', '')}"] = int(meaningful)
+        # Raw sweep (no 20-pt filter) for 11:00, 14:00 (next 4H), and 16:00 windows
+        if label == "11:00":
+            cum_sweep["raw_either_swept_by_1100"] = int(h_c or l_c)
+        if label == "14:00":  # next 4H candle: 10am-2pm
+            cum_sweep["raw_either_swept_by_1400"] = int(h_c or l_c)
+        if label == "16:00":
+            cum_sweep["raw_high_swept_by_1600"] = int(h_c)
+            cum_sweep["raw_low_swept_by_1600"] = int(l_c)
+            cum_sweep["raw_either_swept_by_1600"] = int(h_c or l_c)
 
     rec = {
         "candle_high": candle_high,
@@ -559,6 +572,8 @@ def main():
         "high_sweep_time", "low_sweep_time",
         # cumulative
         *cum_cols,
+        "raw_either_swept_by_1100", "raw_either_swept_by_1400",
+        "raw_high_swept_by_1600", "raw_low_swept_by_1600", "raw_either_swept_by_1600",
         # tier 1
         "close_position", "last_15m_direction", "last_15m_range",
         "last_15m_body_pct", "high_set_time", "low_set_time",
@@ -574,6 +589,29 @@ def main():
     detail = detail[[c for c in col_order if c in detail.columns]].sort_values("date")
     detail.to_csv(DETAILED_OUT, index=False)
     print(f"\n✅ Wrote {DETAILED_OUT}  ({len(detail)} rows)")
+
+    # ---- no raw sweep lists (true "never swept" for verification) ----
+    if "raw_either_swept_by_1400" in detail.columns:
+        no_raw_2pm = detail[detail["raw_either_swept_by_1400"] == 0][
+            ["date", "symbol", "candle_high", "candle_low"]
+        ]
+        no_raw_2pm.to_csv(NO_RAW_SWEEP_2PM_OUT, index=False)
+        pct_2pm = round(100 * (len(detail) - len(no_raw_2pm)) / len(detail), 1)
+        print(f"✅ Wrote {NO_RAW_SWEEP_2PM_OUT}  ({len(no_raw_2pm)} days no sweep in 10a-2p; {pct_2pm}% swept in next 4H)")
+    if "raw_either_swept_by_1100" in detail.columns:
+        no_raw_11 = detail[detail["raw_either_swept_by_1100"] == 0][
+            ["date", "symbol", "candle_high", "candle_low"]
+        ]
+        no_raw_11.to_csv(NO_RAW_SWEEP_11AM_OUT, index=False)
+        pct_11 = round(100 * (len(detail) - len(no_raw_11)) / len(detail), 1)
+        print(f"✅ Wrote {NO_RAW_SWEEP_11AM_OUT}  ({len(no_raw_11)} days with no raw sweep by 11am; {pct_11}% swept)")
+    if "raw_either_swept_by_1600" in detail.columns:
+        no_raw = detail[detail["raw_either_swept_by_1600"] == 0][
+            ["date", "symbol", "candle_high", "candle_low"]
+        ]
+        no_raw.to_csv(NO_RAW_SWEEP_OUT, index=False)
+        pct_16 = round(100 * (len(detail) - len(no_raw)) / len(detail), 1)
+        print(f"✅ Wrote {NO_RAW_SWEEP_OUT}  ({len(no_raw)} days with no raw sweep by 4pm; {pct_16}% swept)")
 
     # ---- summary (meaningful sweeps only: swept side was >= MIN_DISTANCE at 10:00) ----
     n = len(detail)

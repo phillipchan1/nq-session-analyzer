@@ -1,0 +1,28 @@
+NQ Data Validation - Rollover Report
+==================================================
+
+Total trading days: 1393
+Rollover days (symbol changed): 21
+
+Rollover events (from -> to):
+  2020-12-14: NQZ0 -> NQH1
+  2021-03-15: NQH1 -> NQM1
+  2021-06-11: NQM1 -> NQU1
+  2021-09-10: NQU1 -> NQZ1
+  2021-12-10: NQZ1 -> NQH2
+  2022-03-11: NQH2 -> NQM2
+  2022-06-13: NQM2 -> NQU2
+  2022-09-12: NQU2 -> NQZ2
+  2022-12-13: NQZ2 -> NQH3
+  2023-03-13: NQH3 -> NQM3
+  2023-06-12: NQM3 -> NQU3
+  2023-09-11: NQU3 -> NQZ3
+  2023-12-11: NQZ3 -> NQH4
+  2024-03-11: NQH4 -> NQM4
+  2024-06-17: NQM4 -> NQU4
+  2024-09-16: NQU4 -> NQZ4
+  2024-12-16: NQZ4 -> NQH5
+  2025-03-18: NQH5 -> NQM5
+  2025-06-16: NQM5 -> NQU5
+  2025-09-15: NQU5 -> NQZ5
+  2025-12-15: NQZ5 -> NQH6
